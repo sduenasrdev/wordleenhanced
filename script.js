@@ -109,36 +109,35 @@ function checkGuess() {
   }
 
   if (guessString === rightGuessString) {
-    // Replace toastr.success with SweetAlert2 with custom image
+    
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
     Swal.fire({
       title: 'You got it right!',
       text: 'Refresh the page to try again',
-      imageUrl: 'https://images.pexels.com/photos/3824771/pexels-photo-3824771.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-      imageWidth: 800, // Adjust the width as needed
-      imageHeight: 500, // Adjust the height as needed
-      imageAlt: 'Custom image',
-      confirmButtonText: 'OK', // Customize the confirm button text if needed
+      confirmButtonText: 'OK',
     });
     guessesRemaining = 0;
     return;
-  } else {
+  }
+   else {
     guessesRemaining -= 1;
     currentGuess = [];
     nextLetter = 0;
   
     if (guessesRemaining === 0) {
-      // Replace toastr.error with SweetAlert2 with custom image
       Swal.fire({
         icon: 'error',
         title: 'You\'ve run out of guesses. Refresh the page to try again!',
-        text: `The right word was: "${rightGuessString}"`,  // Uncomment if you want to show the correct word
-        imageUrl: 'https://images.pexels.com/photos/1851164/pexels-photo-1851164.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-        imageWidth: 800,
-        imageHeight: 500,
-        imageAlt: 'Custom image',
-        confirmButtonText: 'OK', // Customize the confirm button text if needed
+        text: `The right word was: "${rightGuessString}"`, 
+        html: `<img src="https://media.giphy.com/media/3oz8xLd9DJq2l2VFtu/giphy.gif" style="width: 100%; height: auto;" alt="Error GIF">`,
+        confirmButtonText: 'OK',
       });
-    }
+    }    
   } 
 }
 
@@ -214,6 +213,14 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
   }
 
   document.dispatchEvent(new KeyboardEvent("keyup", { key: key }));
+});
+
+document.getElementById("instructions-button").addEventListener("click", () => {
+  Swal.fire({
+    title: 'How To Play',
+    html: '<p style="text-align: left;">Guess the Wordle in 6 tries.<br>1. Each guess must be a valid 5-letter word.<br>2. The color of the tiles will change to show how close your guess was to the word.<br>3. Green means the letter is in the corresponding slot<br>4. Yellow is the letter is in the word but not in the right slot<br><br>Enjoy!<br></p>',
+    confirmButtonText: 'OK',
+  });
 });
 
 initBoard();
