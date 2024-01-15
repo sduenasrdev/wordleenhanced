@@ -12,6 +12,12 @@ console.log(rightGuessString);
 function initBoard() {
   let board = document.getElementById("game-board");
 
+  // Remove existing rows
+  while (board.firstChild) {
+    board.removeChild(board.firstChild);
+  }
+
+  // Add new rows
   for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
     let row = document.createElement("div");
     row.className = "letter-row";
@@ -25,6 +31,7 @@ function initBoard() {
     board.appendChild(row);
   }
 }
+
 
 function shadeKeyBoard(letter, color) {
   for (const elem of document.getElementsByClassName("keyboard-button")) {
@@ -222,5 +229,32 @@ document.getElementById("instructions-button").addEventListener("click", () => {
     confirmButtonText: 'OK',
   });
 });
+
+document.getElementById("give-up-button").addEventListener("click", () => {
+  Swal.fire({
+    title: 'Are you sure you want to give up?',
+    text: 'You will lose the game!',
+    html: `<img src="https://media.giphy.com/media/5fBH6zf7l8bxukYh74Q/giphy.gif" style="width: 100%; height: auto;" alt="Really GIF">`,
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, give up!',
+    cancelButtonText: 'No, keep playing'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: 'You gave up!',
+        text: `The right word was: "${rightGuessString}". Refresh the page to try again`,
+        imageUrl: 'https://media.giphy.com/media/XeLcgh8gT8o0F5SQ8i/giphy.gif',
+        imageWidth: 200, 
+        imageAlt: 'Patrick GIF',
+        confirmButtonText: 'OK'
+      });
+      guessesRemaining = 0;
+      initBoard();
+    }
+  });
+});
+
 
 initBoard();
