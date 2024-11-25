@@ -126,13 +126,17 @@ function checkGuess() {
     Swal.fire({
       title: 'You got it right!',
       text: 'Refresh the page to try again',
-      html: `<img src="https://media.giphy.com/media/S43RIQ4OtWGKMTyU8q/giphy.gif" style=90%; height: auto;" alt="Error GIF">`,
+      html: `<img src="https://media.giphy.com/media/S43RIQ4OtWGKMTyU8q/giphy.gif" style="width: 90%; height: auto;" alt="Error GIF">`,
       confirmButtonText: 'OK',
+    }).then((result) => {
+      if (result.isConfirmed){
+        location.reload();
+      }
     });
     guessesRemaining = 0;
     return;
   }
-   else {
+  else {
     guessesRemaining -= 1;
     currentGuess = [];
     nextLetter = 0;
@@ -237,8 +241,7 @@ document.getElementById("instructions-button").addEventListener("click", () => {
 document.getElementById("give-up-button").addEventListener("click", () => {
   Swal.fire({
     title: 'Are you sure you want to give up?',
-    text: 'You will lose the game!',
-    html: `<img src="https://media.giphy.com/media/5fBH6zf7l8bxukYh74Q/giphy.gif" style="width: 100%; height: auto;" alt="Really GIF">`,
+    html: `<img src="https://media.giphy.com/media/w9t0aFMjahdxpKKvzN/giphy.gif" style="width: 80%; height: auto;" alt="Really GIF">`,
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
@@ -247,11 +250,8 @@ document.getElementById("give-up-button").addEventListener("click", () => {
   }).then((result) => {
     if (result.isConfirmed) {
       Swal.fire({
-        title: 'You gave up!',
-        text: `The right word was: "${rightGuessString}".`,
-        imageUrl: 'https://media.giphy.com/media/XeLcgh8gT8o0F5SQ8i/giphy.gif',
-        imageWidth: 200, 
-        imageAlt: 'Patrick GIF',
+        title: `You gave up! The right word was: "${rightGuessString}".`,
+        html: `<img src="https://media.giphy.com/media/xTiTnHXbRoaZ1B1Mo8/giphy.gif" style="width: 80%; height: auto;" alt="Really GIF">`,
         confirmButtonText: 'OK'
       }).then(() => {
         location.reload();
