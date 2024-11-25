@@ -126,6 +126,7 @@ function checkGuess() {
     Swal.fire({
       title: 'You got it right!',
       text: 'Refresh the page to try again',
+      html: `<img src"https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmRrbG12cHVwYmI2OHQ4MGRiYXB1enVpcnNndjBid2Zsbno0aWFnZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FbiL9rsmZN3ib2JSGo/giphy.gif" style=100% height: auto;" alt="Error GIF">`
       confirmButtonText: 'OK',
     });
     guessesRemaining = 0;
@@ -252,10 +253,11 @@ document.getElementById("give-up-button").addEventListener("click", () => {
         imageWidth: 200, 
         imageAlt: 'Patrick GIF',
         confirmButtonText: 'OK'
+      }).then(() => {
+        location.reload();
       });
       guessesRemaining = 0;
       initBoard();
-      location.reload();
     }
   });
 });
