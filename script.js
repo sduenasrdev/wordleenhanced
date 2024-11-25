@@ -139,12 +139,15 @@ function checkGuess() {
     if (guessesRemaining === 0) {
       Swal.fire({
         icon: 'error',
-        title: 'You\'ve run out of guesses. Refresh the page to try again!',
-        text: `The right word was: "${rightGuessString}"`, 
+        title: `You've run out of guesses. The right word was: "${rightGuessString}"`,
         html: `<img src="https://media.giphy.com/media/3oz8xLd9DJq2l2VFtu/giphy.gif" style="width: 100%; height: auto;" alt="Error GIF">`,
         confirmButtonText: 'OK',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          location.reload();
+        }
       });
-    }    
+    }  
   } 
 }
 
@@ -244,7 +247,7 @@ document.getElementById("give-up-button").addEventListener("click", () => {
     if (result.isConfirmed) {
       Swal.fire({
         title: 'You gave up!',
-        text: `The right word was: "${rightGuessString}". Refresh the page to try again`,
+        text: `The right word was: "${rightGuessString}".`,
         imageUrl: 'https://media.giphy.com/media/XeLcgh8gT8o0F5SQ8i/giphy.gif',
         imageWidth: 200, 
         imageAlt: 'Patrick GIF',
@@ -252,6 +255,7 @@ document.getElementById("give-up-button").addEventListener("click", () => {
       });
       guessesRemaining = 0;
       initBoard();
+      location.reload();
     }
   });
 });
