@@ -126,7 +126,7 @@ function checkGuess() {
     Swal.fire({
       title: 'You got it right!',
       text: 'Refresh the page to try again',
-      html: `<img src"https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmRrbG12cHVwYmI2OHQ4MGRiYXB1enVpcnNndjBid2Zsbno0aWFnZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FbiL9rsmZN3ib2JSGo/giphy.gif" style=100% height: auto;" alt="Error GIF">`,
+      html: `<img src="https://media.giphy.com/media/S43RIQ4OtWGKMTyU8q/giphy.gif" style=90%; height: auto;" alt="Error GIF">`,
       confirmButtonText: 'OK',
     });
     guessesRemaining = 0;
@@ -141,7 +141,7 @@ function checkGuess() {
       Swal.fire({
         icon: 'error',
         title: `You've run out of guesses. The right word was: "${rightGuessString}"`,
-        html: `<img src="https://media.giphy.com/media/3oz8xLd9DJq2l2VFtu/giphy.gif" style="width: 100%; height: auto;" alt="Error GIF">`,
+        html: `<img src="https://media.giphy.com/media/3oz8xLd9DJq2l2VFtu/giphy.gif" style=100%; height: auto;" alt="Error GIF">`,
         confirmButtonText: 'OK',
       }).then((result) => {
         if (result.isConfirmed) {
