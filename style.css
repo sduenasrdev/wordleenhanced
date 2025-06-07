@@ -1,6 +1,8 @@
 body {
-  background-color: #151616;
-  color: #ecf0f1;
+  font-family: 'Inter', sans-serif;
+  background: #121212;
+  color: #f4f4f4;
+  text-align: center;
 }
 
 h1 {

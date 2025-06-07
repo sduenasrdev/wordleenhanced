@@ -32,6 +32,26 @@ function initBoard() {
   }
 }
 
+function updateStats(win) {
+  const stats = JSON.parse(localStorage.getItem("wordleStats")) || {
+    games: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0
+  };
+
+  stats.games += 1;
+  if (win) {
+    stats.wins += 1;
+    stats.streak += 1;
+    if (stats.streak > stats.maxStreak) {
+      stats.maxStreak = stats.streak;
+    }
+  } else {
+    stats.losses += 1;
+    stats.streak = 0;
+  }
+
+  localStorage.setItem("wordleStats", JSON.stringify(stats));
+}
+
 
 function shadeKeyBoard(letter, color) {
   for (const elem of document.getElementsByClassName("keyboard-button")) {
@@ -117,23 +137,19 @@ function checkGuess() {
 
   if (guessString === rightGuessString) {
     
+    updateStats(true);
     confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 }
     });
-
-    Swal.fire({
+    showResultDialog({
+      icon: 'success',
       title: 'You got it right!',
-      text: 'Refresh the page to try again',
-      html: `<img src="https://media.giphy.com/media/S43RIQ4OtWGKMTyU8q/giphy.gif" style="width: 90%; height: auto;" alt="Error GIF">`,
-      confirmButtonText: 'OK',
-    }).then((result) => {
-      if (result.isConfirmed){
-        location.reload();
-      }
+      gifUrl: 'https://media.giphy.com/media/S43RIQ4OtWGKMTyU8q/giphy.gif'
     });
     guessesRemaining = 0;
+
     return;
   }
   else {
@@ -142,15 +158,11 @@ function checkGuess() {
     nextLetter = 0;
   
     if (guessesRemaining === 0) {
-      Swal.fire({
+      updateStats(false);
+      showResultDialog({
         icon: 'error',
-        title: `You've run out of guesses. The right word was: "${rightGuessString}"`,
-        html: `<img src="https://media.giphy.com/media/3oz8xLd9DJq2l2VFtu/giphy.gif" style=100%; height: auto;" alt="Error GIF">`,
-        confirmButtonText: 'OK',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          location.reload();
-        }
+        title: "You've run out of guesses.",
+        gifUrl: 'https://media.giphy.com/media/3oz8xLd9DJq2l2VFtu/giphy.gif'
       });
     }  
   } 
@@ -238,29 +250,64 @@ document.getElementById("instructions-button").addEventListener("click", () => {
   });
 });
 
-document.getElementById("give-up-button").addEventListener("click", () => {
+document.getElementById("stats-button").addEventListener("click", () => {
+  const stats = JSON.parse(localStorage.getItem("wordleStats")) || {
+    games: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0
+  };
+
   Swal.fire({
-    title: 'Are you sure you want to give up?',
-    html: `<img src="https://media.giphy.com/media/w9t0aFMjahdxpKKvzN/giphy.gif" style="width: 80%; height: auto;" alt="Really GIF">`,
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, give up!',
-    cancelButtonText: 'No, keep playing'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        title: `You gave up! The right word was: "${rightGuessString}".`,
-        html: `<img src="https://media.giphy.com/media/xTiTnHXbRoaZ1B1Mo8/giphy.gif" style="width: 80%; height: auto;" alt="Really GIF">`,
-        confirmButtonText: 'OK'
-      }).then(() => {
-        location.reload();
-      });
-      guessesRemaining = 0;
-      initBoard();
-    }
+    title: 'Your Stats',
+    html: `
+      <p>Games Played: ${stats.games}</p>
+      <p>Wins: ${stats.wins}</p>
+      <p>Losses: ${stats.losses}</p>
+      <p>Current Streak: ${stats.streak}</p>
+      <p>Max Streak: ${stats.maxStreak}</p>
+    `
   });
 });
+
+
+document.getElementById("give-up-button").addEventListener("click", () => {
+  updateStats(false);
+  showResultDialog({
+    icon: 'info',
+    title: `You gave up!`,
+    gifUrl: 'https://media.giphy.com/media/xTiTnHXbRoaZ1B1Mo8/giphy.gif'
+  });
+  guessesRemaining = 0;
+});
+
+function showResultDialog({ icon, title, gifUrl }) {
+  fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${rightGuessString}`)
+    .then(res => res.json())
+    .then(data => {
+      const definition = data[0]?.meanings[0]?.definitions[0]?.definition || "No definition found.";
+
+      Swal.fire({
+        icon: icon,
+        title: title,
+        html: `
+          <p>The word was: <strong>${rightGuessString}</strong></p>
+          <p><em>Definition:</em> ${definition}</p>
+          <img src="${gifUrl}" style="width: 100%; height: auto;" alt="GIF">
+        `,
+        confirmButtonText: 'OK',
+      }).then(() => location.reload());
+    })
+    .catch(err => {
+      Swal.fire({
+        icon: icon,
+        title: title,
+        html: `
+          <p>The word was: <strong>${rightGuessString}</strong></p>
+          <p><em>Definition:</em> (Could not fetch definition)</p>
+          <img src="${gifUrl}" style="width: 100%; height: auto;" alt="GIF">
+        `,
+        confirmButtonText: 'OK',
+      }).then(() => location.reload());
+    });
+}
 
 
 initBoard();
