@@ -7,25 +7,112 @@
     <title>Wordle</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   />
 </head>
 <body>
-    <div class="button-container">
-        <button class="button-54" id="instructions-button" role="button">Show Instructions</button>
-        <p id="instructions" style="display: none;">How To Play
-            Guess the Wordle in 6 tries.
-            Each guess must be a valid 5-letter word.
-            The color of the tiles will change to show how close your guess was to the word.
-            Have fun!
-        </p>
-      </div>
+    <!-- Christmas Banner -->
+    <div id="birthday-banner" style="display: none;">
+        <div class="birthday-content">
+            <h2 class="birthday-title">🎄 Merry Christmas Jojo! 🎅</h2>
+            <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXhteG0zbW01dW1ubXRkNDl0eWdsbWVneWUzam5mYTRpaXFvMnNodyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HuWrt40HLQlfq/giphy.gif"
+                 alt="Christmas GIF"
+                 class="birthday-gif">
+            <button class="birthday-close" id="close-birthday">✕</button>
+        </div>
+    </div>
 
-      <button class="button-54" id="stats-button" role="button">View Stats</button>
+    <!-- User Info Bar -->
+    <div class="user-info-bar" id="user-info-bar">
+        <span>Welcome, <span class="username-display" id="username-display"></span>!</span>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
 
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal">
+        <div class="auth-modal-content">
+            <h2 id="auth-title">Welcome to Wordle!</h2>
+            <p id="auth-description">Please enter a username to track your stats</p>
+            <div id="auth-error" class="auth-error" style="display: none;"></div>
+            <input type="text" id="username-input" class="auth-input" placeholder="Enter username" maxlength="20" autocomplete="off">
+            <div class="auth-buttons">
+                <button id="auth-submit-btn" class="auth-button auth-button-primary">Continue</button>
+            </div>
+            <div class="auth-toggle">
+                <span id="auth-toggle-text">Already have an account? <a id="auth-toggle-link">Login</a></span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Icon Buttons Container -->
+    <div class="icon-buttons-container">
+        <button class="icon-button" id="instructions-button" role="button" title="How to Play">
+            <i class="fas fa-question-circle"></i>
+        </button>
+        <button class="icon-button" id="stats-button" role="button" title="View Stats">
+            <i class="fas fa-chart-bar"></i>
+        </button>
+        <button class="icon-button" id="settings-button" role="button" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="auth-modal" style="display: none;">
+        <div class="auth-modal-content" style="max-width: 500px;">
+            <h2>Settings</h2>
+
+            <div class="settings-option">
+                <label class="theme-toggle">
+                    <span class="theme-label">Dark Mode</span>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="theme-toggle" />
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="settings-option">
+                <h3 style="margin: 0 0 10px 0; color: #333;">Difficulty</h3>
+                <div class="difficulty-selector">
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="easy" id="diff-easy">
+                        <div class="difficulty-card">
+                            <div class="difficulty-title">Easy</div>
+                            <div class="difficulty-desc">Common everyday words</div>
+                        </div>
+                    </label>
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="medium" id="diff-medium" checked>
+                        <div class="difficulty-card">
+                            <div class="difficulty-title">Medium</div>
+                            <div class="difficulty-desc">Moderately common words</div>
+                        </div>
+                    </label>
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="hard" id="diff-hard">
+                        <div class="difficulty-card">
+                            <div class="difficulty-title">Hard</div>
+                            <div class="difficulty-desc">Rare & challenging words</div>
+                        </div>
+                    </label>
+                </div>
+                <p style="font-size: 12px; color: #666; margin-top: 10px; font-style: italic;">
+                    Note: Difficulty change takes effect on next game
+                </p>
+            </div>
+
+            <div class="auth-buttons">
+                <button id="close-settings-btn" class="auth-button auth-button-primary">Close</button>
+            </div>
+        </div>
+    </div>
 
     <h1> Sebastian's Wordle Game </h1>
     
@@ -70,13 +157,18 @@
         </div>
     </div>
 
-    <button class="button-54"  id="give-up-button" role="button">I Give Up</button>
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+        <button class="button-54" id="hint-button" role="button">💡 Hint</button>
+        <button class="button-54" id="give-up-button" role="button">I Give Up</button>
+    </div>
 
 <script
 src="https://code.jquery.com/jquery-3.6.0.min.js"
 integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="word-api.js" type="module"></script>
 <script src="script.js" type="module"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
