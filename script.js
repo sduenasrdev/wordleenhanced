@@ -306,11 +306,8 @@ document.getElementById("instructions-button").addEventListener("click", () => {
 
 document.getElementById("stats-button").addEventListener("click", async () => {
   if (!isLoggedIn()) {
-    Swal.fire({
-      icon: 'info',
-      title: 'Login Required',
-      text: 'Please login to view stats'
-    });
+    // Show local stats for guest users
+    showLocalStatsModal();
     return;
   }
 
@@ -446,6 +443,66 @@ function showStatsModal(stats, distribution, history, leaderboard) {
       </div>
     `,
     width: '600px',
+    showCloseButton: true,
+    showConfirmButton: false
+  });
+}
+
+function showLocalStatsModal() {
+  // Get local stats from localStorage
+  const stats = JSON.parse(localStorage.getItem("wordleStats")) || {
+    games: 0, wins: 0, losses: 0, streak: 0, maxStreak: 0
+  };
+
+  const winPercentage = stats.games > 0
+    ? ((stats.wins / stats.games) * 100).toFixed(1)
+    : 0;
+
+  Swal.fire({
+    title: 'Local Statistics',
+    html: `
+      <div style="text-align: left;">
+        <div style="background-color: #f0f8f0; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; text-align: center;">
+            <div>
+              <div style="font-size: 28px; font-weight: bold; color: #6aaa64;">${stats.games}</div>
+              <div style="font-size: 12px; color: #666;">Games Played</div>
+            </div>
+            <div>
+              <div style="font-size: 28px; font-weight: bold; color: #6aaa64;">${winPercentage}%</div>
+              <div style="font-size: 12px; color: #666;">Win Rate</div>
+            </div>
+            <div>
+              <div style="font-size: 28px; font-weight: bold; color: #6aaa64;">${stats.streak}</div>
+              <div style="font-size: 12px; color: #666;">Current Streak</div>
+            </div>
+            <div>
+              <div style="font-size: 28px; font-weight: bold; color: #6aaa64;">${stats.maxStreak}</div>
+              <div style="font-size: 12px; color: #666;">Max Streak</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background-color: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+          <div style="font-size: 14px; color: #856404;">
+            <strong>Playing as Guest</strong><br>
+            Stats are saved locally on this device only. Login to sync your stats across devices and access the leaderboard!
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+          <button onclick="document.getElementById('signup-btn').click(); Swal.close();"
+                  style="background-color: #6aaa64; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 0 5px;">
+            Sign Up
+          </button>
+          <button onclick="document.getElementById('login-btn').click(); Swal.close();"
+                  style="background-color: #787c7e; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 0 5px;">
+            Login
+          </button>
+        </div>
+      </div>
+    `,
+    width: '500px',
     showCloseButton: true,
     showConfirmButton: false
   });
@@ -603,13 +660,12 @@ function showAuthModal() {
   document.getElementById('auth-toggle-link').addEventListener('click', toggleAuthMode);
 
   modal.style.display = 'block';
-  document.body.classList.add('auth-required');
+  // Don't add 'auth-required' class anymore - game should remain playable
   document.getElementById('username-input').focus();
 }
 
 function hideAuthModal() {
   document.getElementById('auth-modal').style.display = 'none';
-  document.body.classList.remove('auth-required');
   document.getElementById('auth-error').style.display = 'none';
   document.getElementById('username-input').value = '';
 }
@@ -673,11 +729,16 @@ async function handleAuthSubmit() {
 
 function updateUserDisplay() {
   const user = getCurrentUser();
+  const loggedInDiv = document.getElementById('user-logged-in');
+  const loggedOutDiv = document.getElementById('user-logged-out');
+
   if (user) {
     document.getElementById('username-display').textContent = user.username;
-    document.getElementById('user-info-bar').classList.add('active');
+    loggedInDiv.style.display = 'flex';
+    loggedOutDiv.style.display = 'none';
   } else {
-    document.getElementById('user-info-bar').classList.remove('active');
+    loggedInDiv.style.display = 'none';
+    loggedOutDiv.style.display = 'flex';
   }
 }
 
@@ -688,6 +749,23 @@ document.getElementById('username-input').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     handleAuthSubmit();
   }
+});
+
+// Event listeners for header login/signup buttons
+document.getElementById('login-btn').addEventListener('click', () => {
+  isRegistering = false;
+  showAuthModal();
+});
+
+document.getElementById('signup-btn').addEventListener('click', () => {
+  isRegistering = true;
+  showAuthModal();
+});
+
+// Event listener for "Play as Guest" button
+document.getElementById('auth-skip-btn').addEventListener('click', () => {
+  hideAuthModal();
+  toastr.info('Playing as guest - stats will only be saved locally');
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
@@ -864,12 +942,8 @@ async function init() {
   // Initialize game with word
   await initializeGame();
 
-  // Check if user is logged in on page load
-  if (isLoggedIn()) {
-    updateUserDisplay();
-  } else {
-    showAuthModal();
-  }
+  // Update user display based on login status (but don't block the game)
+  updateUserDisplay();
 }
 
 // Start the app
