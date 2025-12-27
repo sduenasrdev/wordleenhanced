@@ -898,11 +898,11 @@ function checkBirthdayBanner() {
   const month = date.getMonth() + 1; // getMonth() is 0-indexed
   const day = date.getDate();
 
-  // Check if it's December 25th
-  if (month === 12 && day === 25) {
+  // Check if it's December 27th
+  if (month === 12 && day === 27) {
     // Check if banner was already dismissed today
     const dismissedDate = localStorage.getItem('christmasBannerDismissed');
-    const today = `${date.getFullYear()}-12-25`;
+    const today = `${date.getFullYear()}-12-27`;
 
     if (dismissedDate !== today) {
       // Show the banner
